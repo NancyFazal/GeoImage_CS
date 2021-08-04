@@ -1,48 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Text, View, StyleSheet, Button, Alert} from 'react-native';
+import { TextInput, Platform, Text, View, StyleSheet, Button, Alert } from 'react-native';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
-import MapView , {Marker, Circle, Polyline} from 'react-native-maps';
+import MapView, { Marker, Circle, Polyline } from 'react-native-maps';
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
 import * as geolib from 'geolib';
 
 export default function MapScreen() {
-const [location, setLocation] = useState(null);
-const [isFetching, setIsFetching] = useState(false);
- const [isChangingRadius, setIsChangingRadius] = useState(false);
- const [radius, setRadius] = useState(3000);
- const [generateTargets, setGenerateTargets] = useState(false);
- const [targets, setTargets] = useState([]);
- const [distances, setDistances] = useState([]);
- const [index, setIndex] = useState(null);
- const [coords, setCoords] = useState([]);
+  const [location, setLocation] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
+  const [isChangingRadius, setIsChangingRadius] = useState(false);
+  const [radius, setRadius] = useState(3000);
+  const [generateTargets, setGenerateTargets] = useState(false);
+  const [targets, setTargets] = useState([]);
+  const [distances, setDistances] = useState([]);
+  const [index, setIndex] = useState(null);
+  const [coords, setCoords] = useState([]);
+  const [num, setNum] = useState();
 
- const changeRadiusHandler = () =>{
-     setIsChangingRadius(true);
- };
- const onFinishRadiusEdit = () =>{
-     setIsChangingRadius(false);
-     setGenerateTargets(true);
- }
+  const changeRadiusHandler = () => {
+    setIsChangingRadius(true);
+  };
+  const onFinishRadiusEdit = () => {
+    setIsChangingRadius(false);
+    setGenerateTargets(true);
+  }
   const [pickedLocation, setPickedLocation] = useState({
-        latitude:62.59828203570094,
-        longitude:29.743811008682826
+    latitude: 62.59828203570094,
+    longitude: 29.743811008682826
   });
   const [errorMsg, setErrorMsg] = useState(null);
   const [region, setRegion] = useState({
-        latitude: 37.090,
-        longitude: 95.712,
-        latitudeDelta: 0.001,
-        longitudeDelta: 0.001
-    });
-  const [center, setCenter] = useState({
-    latitude:62.59828203570094,
-    longitude:29.743811008682826
+    latitude: 37.090,
+    longitude: 95.712,
+    latitudeDelta: 0.002,
+    longitudeDelta: 0.002
   });
-  console.log("coordinates for polyline");
-  console.log(coords);
+  const [center, setCenter] = useState({
+    latitude: 62.59828203570094,
+    longitude: 29.743811008682826
+  });
+  // console.log("coordinates for polyline");
+  // console.log(coords);
+  console.log("first render");
   useEffect(() => {
     console.log("Inside UseEffect 1");
     const verifyPermissions = async () => {
@@ -60,10 +62,11 @@ const [isFetching, setIsFetching] = useState(false);
     (async () => {
       const hasPermission = await verifyPermissions();
       if (!hasPermission) {
-        return;
+        return; //add alert box
       }
       try {
         setIsFetching(true);
+        console.log("second render");
         const location = await Location.getCurrentPositionAsync({
           timeout: 5000
         });
@@ -71,183 +74,232 @@ const [isFetching, setIsFetching] = useState(false);
           latitude: location.coords.latitude,
           longitude: location.coords.longitude
         });
+        console.log("third render");
         setRegion({
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
-          latitudeDelta: 0.14,
-          longitudeDelta: 0.14 
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.001
         });
+        console.log("fourth render");
 
       } catch (err) {
         Alert.alert(
           'Could not fetch location!',
-          'Please try again later or pick a location on the map.',
+          'Please try again.',
           [{ text: 'Okay' }]
         );
       }
       setIsFetching(false);
-    }) (); 
-  },[]);
+      console.log("fifth render");
+    })();
+  }, []);
   //trying with useEffect now
-     /* useEffect(() => {
-      console.log("inside use effect");
-      console.log(region.latitude);
-      //(async () => {
-      async function onGenerateTargets(){
-      var url = `https://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"query_osm_circle","lat":${region.latitude},"lng":${region.longitude},"radius":3,"limit":10}`;
-      console.log(url);
+  /* useEffect(() => {
+   console.log("inside use effect");
+   console.log(region.latitude);
+   //(async () => {
+   async function onGenerateTargets(){
+   var url = `https://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"query_osm_circle","lat":${region.latitude},"lng":${region.longitude},"radius":3,"limit":10}`;
+   console.log(url);
+   try {
+     let response = await fetch(
+       url,
+     );
+     let responseJson = await response.json();
+     console.log(responseJson);
+     setTargets(responseJson);
+     console.log("not working");
+   } catch (error) {
+     console.error(error);
+   }
+}
+}, [generateTargets]);*/
+  useEffect(() => {
+    console.log("Inside UseEffect 2"); //logs the output
+    //fetch(`https://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"query_osm_circle","lat":${region.latitude},"lng":${region.longitude},"radius":${radius/1000},"limit":${num}}`)
+    //   .then((response)=>{
+    //   console.log('resolved');
+    //   return response.json();
+    // }).then(data=>{
+    //   setTargets(data);
+    // }).catch((err)=>{
+    //   Alert.alert(
+    //     "Failed: Network Error",
+    //     "Try again",
+    //     [
+    //       { text: "OK"}
+    //     ]
+    //   );
+    //   console.log('rejected', err);
+    // })
+    (async () => {
+      var url = `https://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"query_osm_circle","lat":${region.latitude},"lng":${region.longitude},"radius":${radius / 1000},"limit":${num}}`;
       try {
         let response = await fetch(
           url,
         );
         let responseJson = await response.json();
-        console.log(responseJson);
+        console.log(url);
+        //console.log(responseJson); //does not log the output
         setTargets(responseJson);
-        console.log("not working");
       } catch (error) {
-        console.error(error);
+        console.error(error);//better show an error alert here
       }
-  }
-  }, [generateTargets]);*/
-  useEffect(() => {
-    console.log("Inside UseEffect 2"); //logs the output
-    (async () => {
-        var url = `https://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"query_osm_circle","lat":${region.latitude},"lng":${region.longitude},"radius":3,"limit":10}`;
-        try {
-            let response = await fetch(
-                url,
-            );
-            let responseJson = await response.json();
-           // console.log("shall it work?")
-            console.log(responseJson); //does not log the output
-            setTargets(responseJson);
-        } catch (error) {
-            console.error(error);
-        }
     })()
-},[generateTargets]);
-const test = () =>{
-  console.log("testing");
-}
-//USEEFFECT 3
-// useEffect(() => {
-//   console.log("inside third hook");
-//   var lat1 = pickedLocation.latitude;
-//     console.log(lat1);
-//     var lng1 = pickedLocation.longitude;
-//     console.log(lng1);
-//     //console.log(targets);
-//     console.log("targets distance");
-//     const R = 6371; // metres
-//     let targets_distance = [];
-//     for(var i=0; i<targets.length; i++){
-//       const φ1 = lat1 * Math.PI/180;
-//       const φ2 = targets[i].lat * Math.PI/180;
-//       const Δφ = (targets[i].lat-lat1) * Math.PI/180;
-//       const Δλ = (targets[i].lng-lng1) * Math.PI/180;
-//     const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-//       Math.cos(φ1) * Math.cos(φ2) *
-//       Math.sin(Δλ/2) * Math.sin(Δλ/2);
-//     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-//     const d = R * c; // in metres
-//     //console.log(d);
-//     targets_distance.push(d);
-// }
-//     console.log(targets_distance);
-// }, [pickedLocation]);
-//USEEFFECT 3
+  }, [generateTargets]);
+  const test = () => {
+    console.log("testing");
+  }
+  //USEEFFECT 3
+  useEffect(() => {
+    console.log("inside third hook");
+    var lat1 = pickedLocation.latitude;
+    //console.log(lat1);
+    var lng1 = pickedLocation.longitude;
+    //console.log(lng1);
+    console.log(targets);
+    console.log("targets distance");
+    const R = 6371; // metres
+    let targets_distance = [];
+    for (var i = 0; i < targets.length; i++) {
+      const φ1 = lat1 * Math.PI / 180;
+      const φ2 = targets[i].lat * Math.PI / 180;
+      const Δφ = (targets[i].lat - lat1) * Math.PI / 180;
+      const Δλ = (targets[i].lng - lng1) * Math.PI / 180;
+      const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) *
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const d = R * c; // in metres
+      //console.log(d);
+      targets_distance.push(d);
+    }
+    setDistances(targets_distance);
+    console.log(targets_distance);
+  }, [pickedLocation]);
+  //USEEFFECT 3
   //return targets;
   // console.log("outside useeffect hook");
   // console.log(targets);
-//   const generatedTargets = () =>{
-//     var lat1 = pickedLocation.latitude;
-//     console.log(lat1);
-//     var lng1 = pickedLocation.longitude;
-//     console.log(lng1);
-//     console.log(targets);
-//     console.log("targets distance");
-//     const R = 6371; // metres
-//     let targets_distance = [];
-//     for(i=0; i<targets.length; i++){
-//       const φ1 = lat1 * Math.PI/180;
-//       const φ2 = targets[i].lat * Math.PI/180;
-//       const Δφ = (targets[i].lat-lat1) * Math.PI/180;
-//       const Δλ = (targets[i].lng-lng1) * Math.PI/180;
-//     const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-//       Math.cos(φ1) * Math.cos(φ2) *
-//       Math.sin(Δλ/2) * Math.sin(Δλ/2);
-//     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-//     const d = R * c; // in metres
-//     //console.log(d);
-//     targets_distance.push(d);
-// }
-//     console.log(targets_distance);
-//     //const min = Math.min(...targets_distance);
-//     var index = 0;
-//     var value = targets_distance[0];
-//     for (var i = 1; i < targets_distance.length; i++) {
-//     if (targets_distance[i] < value) {
-//     value = targets_distance[i];
-//     index = i;
-//   }
-// }
-//    console.log("smallest element is "+ value + "at index "+ index);
-//     setDistances(targets_distance);
-//   }
-  const displayFooter = () =>{
-    if(isChangingRadius == false && generateTargets == false){
-        return (<View>
-            <Button title="Reset Radius" onPress={changeRadiusHandler}/>
-        </View>)
-    }else if (isChangingRadius == true){
-        return (<View style={styles.buttonContainer}>
-            <Button title=" + " onPress={()=>setRadius(radius+500)}/>
-            <Button title= "Generate targets" onPress={onFinishRadiusEdit}/>
-            <Button title=" - " onPress={()=>setRadius(radius-500)}/>
-        </View>)
+  const generatedTargets = () => {
+    var lat1 = pickedLocation.latitude; // user location
+    console.log(lat1);
+    var lng1 = pickedLocation.longitude;
+    console.log(lng1);
+    console.log(targets);
+    console.log("targets distance");
+    const R = 6371; // metres
+    let targets_distance = [];
+    for (i = 0; i < targets.length; i++) {
+      const φ1 = lat1 * Math.PI / 180;
+      const φ2 = targets[i].lat * Math.PI / 180;
+      const Δφ = (targets[i].lat - lat1) * Math.PI / 180;
+      const Δλ = (targets[i].lng - lng1) * Math.PI / 180;
+      const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) *
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const d = R * c; // in metres
+      //console.log(d);
+      targets_distance.push(d);
     }
-    else{
-        return (<View>
-            <Button title="Play" onPress={test}/>
-        </View>)
+    console.log(targets_distance);
+    //const min = Math.min(...targets_distance);
+    var index = 0;
+    var value = targets_distance[0];
+    for (var i = 1; i < targets_distance.length; i++) {
+      if (targets_distance[i] < value) {
+        value = targets_distance[i];
+        index = i;
+      }
     }
-}
+    console.log("smallest element is " + value + "at index " + index);
+    setIndex(index);
+    setDistances(targets_distance);
+  }
+  //custmoize shortest distance target marker
+  //   const shortestDistance = () =>{
+  //     console.log('is there targets');
+  //     console.log(targets);
+  //     targets.map((target, index) => (
+  //       <MapView.Marker
+  //       key={index}
+  //       coordinate={{
+  //       latitude: target.lat,
+  //       longitude: target.lng}}
+  //       title={target.name}
+  // />
+  // ))
+  //   }
+  const displayFooter = () => {
+    if (isChangingRadius == false && generateTargets == false) {
+      return (<View>
+        <Button title="Reset Radius" onPress={changeRadiusHandler} />
+      </View>)
+    } else if (isChangingRadius == true) {
+      return (<View style={styles.buttonContainer}>
+        <Button title=" + " onPress={() => setRadius(radius + 500)} />
+        <Button title="Generate targets" onPress={onFinishRadiusEdit} />
+        <Button title=" - " onPress={() => setRadius(radius - 500)} />
+        <TextInput
+          value={num}
+          onChangeText={num => setNum(num)}
+          placeholder={'Targets'}
+          style={styles.input}
+        />
+      </View>)
+    }
+    else {
+      return (<View>
+        <Button title="Play" onPress={test} />
+      </View>)
+    }
+  }
   return (
     <View style={styles.container}>
-    <Header title="O-Mopsi Crowdsourcing"/>
-      <MapView style={styles.mapContainer} 
+      <Header title="O-Mopsi Crowdsourcing" />
+      <MapView style={styles.mapContainer}
         //provider={MapView.PROVIDER_GOOGLE}
-        region = {{latitude: region.latitude,
-              longitude: region.longitude,
-              latitudeDelta: region.latitudeDelta,
-              longitudeDelta: region.longitudeDelta}}
-              showsUserLocation={true}
-              followUserLocation={true}
-              userLocationUpdateInterval={60000}
-              onUserLocationChange={event =>(
-               setPickedLocation({latitude:event.nativeEvent.coordinate.latitude,
-              longitude:event.nativeEvent.coordinate.longitude}),
-              setCoords({latitude:event.nativeEvent.coordinate.latitude,
-              longitude:event.nativeEvent.coordinate.longitude})
-            )
-          }
-        > 
-        {targets.map((target, index) => (
-      <MapView.Marker
-      key={index}
-      coordinate={{
-      latitude: target.lat,
-      longitude: target.lng}}
-      title={target.name}
-/>
-))}       
+        region={{
+          latitude: region.latitude,
+          longitude: region.longitude,
+          latitudeDelta: region.latitudeDelta,
+          longitudeDelta: region.longitudeDelta
+        }}
+        showsUserLocation={true}
+        followUserLocation={true}
+        userLocationUpdateInterval={2000}
+        onUserLocationChange={event => (
+          //console.log(event.nativeEvent.coordinate.latitude)
+          console.log('event fired'),
+          setPickedLocation({
+          latitude:event.nativeEvent.coordinate.latitude,
+          longitude:event.nativeEvent.coordinate.longitude
+          })
+          // setCoords({latitude:event.nativeEvent.coordinate.latitude,
+          // longitude:event.nativeEvent.coordinate.longitude})
+        )
+        }
+      >
+        {
+          targets.map((target, index) => (
+            <MapView.Marker
+              key={index}
+              coordinate={{
+                latitude: target.lat,
+                longitude: target.lng
+              }}
+              title={target.name}
+            />
+          ))}
         <MapView.Circle
-                key = { (region.latitude + region.longitude).toString() }
-                center = {pickedLocation}
-                radius = {radius}
-                strokeWidth = { 2 }
-                strokeColor = { '#1a66ff' }
-                fillColor = { 'rgba(230,238,255,0.5)' }
+          key={(region.latitude + region.longitude).toString()}
+          center={pickedLocation}
+          radius={radius}
+          strokeWidth={2}
+          strokeColor={'#1a66ff'}
+          fillColor={'rgba(230,238,255,0.5)'}
         />
         {/* <Polyline
 		    coordinates={[
@@ -260,10 +312,10 @@ const test = () =>{
 		    strokeColor="rgb(255,0,0)" 
 		    strokeWidth={5}
 	/> */}
-        </MapView>
-        <View style={styles.footer}>
-        {displayFooter()}       
-        </View>
+      </MapView>
+      <View style={styles.footer}>
+        {displayFooter()}
+      </View>
     </View>
   );
 }
@@ -280,18 +332,18 @@ const styles = StyleSheet.create({
   mapContainer: {
     width: '100%',
     height: 500,
-    marginBottom: 20  
+    marginBottom: 20
   },
-  footer:{
+  footer: {
     width: '100%',
     height: 70,
-    backgroundColor:'#FF7F50',
+    backgroundColor: '#FF7F50',
     alignItems: 'center',
     justifyContent: 'center'
-},
-buttonContainer:{
+  },
+  buttonContainer: {
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-evenly'
-}
+  }
 });

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { TextInput, Text, View, StyleSheet, Button, Alert, Image, ActivityIndicator} from 'react-native';
 import axios from 'axios';
+import MapScreen from './MapScreen';
 export default function Login() {
-    const [isLoading, setLoading] = useState(true);  
+    const [isLoading, setLoading] = useState(false);  
     const [isloggedin, setIsloggedin] = useState(false);
-    const [name, setName] = useState('');
-    const [password, setPassword] = useState('');
-    const [response, setResponse] = useState([]);
+    const [name, setName] = useState(null);
+    const [password, setPassword] = useState(null);
+    const [response, setResponse] = useState({});
     console.log(name);
     console.log(password);
     const onLoginClick = ()=>{
-      if(name === ''){
+      if(name === null){
         Alert.alert(
           "Username is missing",
           "enter your name",
@@ -19,7 +20,7 @@ export default function Login() {
           ]
         );
       }
-      else if(password ===''){
+      else if(password === null){
         Alert.alert(
           "Password is missing",
           "enter your password",
@@ -30,7 +31,7 @@ export default function Login() {
       }
       else {
       console.log("Login button clicked");
-        // axios
+        // Using axios
         //   .get('https://jsonplaceholder.typicode.com/posts/1')
         //   .then((response)=> {
         //     console.log('resolved');
@@ -48,14 +49,29 @@ export default function Login() {
         //   });
       
       fetch(`https://cs.uef.fi/mopsi_dev/nancy/server.php?param={%22request_type%22:%22login_to_mopsi%22,%22username%22:%22${name}%22,%22password%22:%22${password}%22}`)
-      //fetch('http://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"login_to_mopsi","username":"nancy","password":"nanbarcyook"}')
       .then((response)=>{
       console.log('resolved');
       return response.json();
     }).then(data=>{
-      //setResponse(JSON.parse(data));
-      console.log(data);
+      if(data.error !==null){
+        Alert.alert(
+          "Username or Password is incorrect",
+          "Try again",
+          [
+            { text: "OK"}
+          ]
+        );
+      }else{
+        setResponse(data);
+      }
     }).catch((err)=>{
+      Alert.alert(
+        "Failed: Network Error",
+        "Try again",
+        [
+          { text: "OK"}
+        ]
+      );
       console.log('rejected', err);
     })
     //Using traditional http request method
@@ -70,12 +86,18 @@ export default function Login() {
 //     console.error('error');
 //   }
 // };
-// request.open('GET', 'http://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"login_to_mopsi","username":"nancy","password":"nanbarcyook"}');
+// request.open('GET', 'http://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"login_to_mopsi","username":"test","password":"test"}');
 // request.send();
-//http ends here
+//Http ends here
       }
-  } 
-  return (
+  }
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }  
+  const showDisplay = ()=>{
+    var test = isEmpty(response);
+    if(test === true){
+      return (
         <View style={styles.container}>
         <View style={styles.imageContainer}>
         <Image style={styles.image} source={require('../assets/Logo.png')}/>
@@ -99,7 +121,17 @@ export default function Login() {
           onPress={onLoginClick}
           />
         </View>
-    )
+
+      )
+    }else {
+      return (
+          <MapScreen />
+      )
+    }
+  }
+  return (
+      showDisplay()
+    );
   }
 const styles = StyleSheet.create({
     container: {
