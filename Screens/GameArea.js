@@ -104,7 +104,6 @@ export default function GameArea() {
     const onRegionChangeComplete = (region) => {
         if (draggingMap === true && targets.length == 0) {
             getBoundaries();
-            //console.log(region);
             setRegion({
                 latitude: region.latitude,
                 longitude: region.longitude,
@@ -291,26 +290,31 @@ export default function GameArea() {
     }, []);
     // console.log('after async watch');
     // console.log(pickedLocation);
-    const displayFooter = () => {
-        if (generateTargets == true) {
-            return (<View>
-                <TextInput
-                    value={numofTargets}
-                    onChangeText={numofTargets => setNumofTargets(numofTargets)}
-                    placeholder={'No. of Targets'}
-                    style={styles.input}
-                />
-                <Button title="Generate Targets" onPress={generatedTargets} />
-            </View>)
-        }
-        else {
-            return (
-                <View>
-                    <Button title="Play" />
-                </View>
-            )
-        }
+    // const displayFooter = () => {
+    //     if (generateTargets == true) {
+    //         return (<View>
+    //             <TextInput
+    //                 value={numofTargets}
+    //                 onChangeText={numofTargets => setNumofTargets(numofTargets)}
+    //                 placeholder={'No. of Targets'}
+    //                 style={styles.input}
+    //             />
+    //             <Button title="Generate Targets" onPress={generatedTargets} />
+    //         </View>)
+    //     }
+    //     else {
+    //         return (
+    //             <View>
+    //                 <Button title="Play" />
+    //             </View>
+    //         )
+    //     }
+    // }
+    //function to set number of targets
+    const setNumberOfTargets = (numofTargets) =>{
+        setNumofTargets(numofTargets);
     }
+    //
     return (
         <View style={styles.container}>
             <Header title="O-Mopsi Crowdsourcing" />
@@ -339,9 +343,15 @@ export default function GameArea() {
                         />
                     ))}
             </MapView>
-            <View style={styles.footer}>
+            {/* <View style={styles.footer}>
                 {displayFooter()}
-            </View>
+            </View> */}
+            <Footer 
+                Targets = {generateTargets}
+                numberOfTargets = {numofTargets}
+                setNumTargets = {setNumberOfTargets}
+                osmTargets = {generatedTargets}
+            />
         </View>
     );
 }
