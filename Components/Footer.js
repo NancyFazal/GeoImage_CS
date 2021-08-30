@@ -17,7 +17,7 @@ const displayFooter = () =>{
     else {
         return (
             <View>
-                <Button title="Play" />
+                <Button title="Regenerate Targets" onPress={props.osmTargets}  />
             </View>
         )
     }

@@ -144,7 +144,7 @@ export default function GameArea() {
         // setGenerateTargets(true);
         //console.log("button clicked");
         var url = `https://cs.uef.fi/mopsi_dev/nancy/server.php?param={"request_type":"query_osm_bounds","n":${mapBounds.n},"s":${mapBounds.s},"e":${mapBounds.e},"w":${mapBounds.w},"limit":${numofTargets}}`;
-        //console.log(url);
+        console.log(url);
         if (numofTargets == null) {
             Alert.alert(
                 "Missing",
@@ -195,20 +195,20 @@ export default function GameArea() {
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             const distance = R * c * 1000; // in metres
             console.log('distance is'. d);
-            //const d = 20;
-            if(distance<=20){
-                //setConditionCounter(c => c + 1);
-                //<PhotoHandler key={conditionCounter} />; 
-                {Alert.alert(
-                    "Success",
-                    "Take photo",
-                    [
-                      {text: "Open Camera"}
-                    ]
-                  )} 
+            const distance1 = 20;
+            if(distance1<=20){
+                setConditionCounter(c => c + 1);
+                <PhotoHandler key={conditionCounter} />; 
+                // {Alert.alert(
+                //     "Success",
+                //     "Take photo",
+                //     [
+                //       {text: "Open Camera"}
+                //     ]
+                //   )} 
             }
             else{
-                targets_distance.push(distance);
+                targets_distance.push(distance1);
             }
         }
         console.log(targets_distance);
@@ -318,6 +318,8 @@ export default function GameArea() {
     return (
         <View style={styles.container}>
             <Header title="O-Mopsi Crowdsourcing" />
+            {conditionCounter?
+            <PhotoHandler />:
             <MapView style={styles.mapContainer}
                 region={{
                     latitude: region.latitude,
@@ -342,10 +344,7 @@ export default function GameArea() {
                             title={target.name}
                         />
                     ))}
-            </MapView>
-            {/* <View style={styles.footer}>
-                {displayFooter()}
-            </View> */}
+            </MapView>}
             <Footer 
                 Targets = {generateTargets}
                 numberOfTargets = {numofTargets}

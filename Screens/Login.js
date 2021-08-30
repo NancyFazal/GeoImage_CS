@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextInput, Text, View, StyleSheet, Button, Alert, Image, ActivityIndicator} from 'react-native';
 import axios from 'axios';
 import MapScreen from './MapScreen';
+import GameArea from './GameArea';
 export default function Login() {
     const [isLoading, setLoading] = useState(false);  
     const [isloggedin, setIsloggedin] = useState(false);
@@ -125,7 +126,7 @@ export default function Login() {
       )
     }else {
       return (
-          <MapScreen />
+          <GameArea />
       )
     }
   }

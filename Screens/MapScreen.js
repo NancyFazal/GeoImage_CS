@@ -270,17 +270,17 @@ export default function MapScreen() {
         showsUserLocation={true}
         followUserLocation={true}
         userLocationUpdateInterval={2000}
-        onUserLocationChange={event => (
+        //onUserLocationChange={event => (
           //console.log(event.nativeEvent.coordinate.latitude)
-          console.log('event fired'),
-          setPickedLocation({
-          latitude:event.nativeEvent.coordinate.latitude,
-          longitude:event.nativeEvent.coordinate.longitude
-          })
+          //console.log('event fired')
+          // setPickedLocation({
+          // latitude:event.nativeEvent.coordinate.latitude,
+          // longitude:event.nativeEvent.coordinate.longitude
+          // })
           // setCoords({latitude:event.nativeEvent.coordinate.latitude,
           // longitude:event.nativeEvent.coordinate.longitude})
-        )
-        }
+        //)
+        //}
       >
         {
           targets.map((target, index) => (
